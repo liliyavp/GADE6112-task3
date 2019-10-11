@@ -43,8 +43,18 @@ namespace GADE6112___Task3
             isDestroyed = parameters[11] == "True" ? true : false;
         }
 
+        public int Generated {
+            get { return generated; }
+        }
+
+        public int Pool {
+            get { return pool; }
+            set { pool = value; }
+        }
+
         public override void Destroy() {
             isDestroyed = true;
+            generated = 0;
             symbol = '_';
         }
 

@@ -11,57 +11,69 @@ namespace GADE6112___Task3
         public readonly int width = 20;
         public readonly int height = 20;
 
-        Unit[] units;
-        Building[] buildings;
+        //dictionary that stores a list of units using their faction as a key
+        Dictionary<string, List<Unit>> units; 
+
+        //dictionary that stores a list of buildings using their faction as a key
+        Dictionary<string, List<Building>> buildings; 
 
         string[,] map;
-        string[] factions = { "A-Team", "B-Team" };
+        string[] factions = {};
 
         int numUnits;
         int numBuildings;
 
-        public Map(int width, int height, int numUnits, int numBuildings) {
+        public Map(int width, int height, string[] factions, int numUnits = 0, int numBuildings = 0) {
             this.numUnits = numUnits;
             this.numBuildings = numBuildings;
+            this.factions = factions;
 
             this.width = width;
             this.height = height;
 
             map = new string[width, height];
+            units = new Dictionary<string, List<Unit>>();
+            buildings = new Dictionary<string, List<Building>>();
+
+            foreach(string faction in factions) {
+                units[faction] = new List<Unit>();
+                buildings[faction] = new List<Building>();
+            }
+
             InitializeUnits();
             InitializeBuildings();
             UpdateMap();
         }
-        public Map(int width, int height)
+
+        public List<Unit> Units
         {
-            this.numUnits = 0;
-            this.numBuildings = 0;
-
-            this.width = width;
-            this.height = height;
-
-            map = new string[width, height];
-            units = new Unit[numUnits];
-            buildings = new Building[numBuildings];
-            UpdateMap();
-
+            get { return GetUnits(); }
         }
 
-        public Unit[] Units
+        public List<Building> Buildings
         {
-            get { return units; }
+            get { return GetBuildings(); }
         }
 
-        public Building[] Buildings
-        {
-            get { return buildings; }
+        List<Unit> GetUnits() {
+            List<Unit> allUnits = new List<Unit>();
+            foreach(KeyValuePair<string, List<Unit>> factionUnits in units) {
+                allUnits.AddRange(factionUnits.Value);
+            }
+            return allUnits;
+        }
+
+        List<Building> GetBuildings() {
+            List<Building> allBuildings = new List<Building>();
+            foreach (KeyValuePair<string, List<Building>> factionBuildings in buildings) {
+                allBuildings.AddRange(factionBuildings.Value);
+            }
+            return allBuildings;
         }
 
         private void InitializeUnits()
         {
-            units = new Unit[numUnits];
-
-            for (int i = 0; i < units.Length; i++)
+            for (int i = 0; i < numUnits; i++)
             {
                 int x = GameEngine.random.Next(0, width);
                 int y = GameEngine.random.Next(0, height);
@@ -74,23 +86,21 @@ namespace GADE6112___Task3
                     y = GameEngine.random.Next(0, height);
                 }
 
-                if (unitType == 0)
-                {
-                    units[i] = new MeleeUnit(x, y, factions[factionIndex]);
+                Unit unit;
+                if (unitType == 0) {
+                    unit = new MeleeUnit(x, y, factions[factionIndex]);
                 }
-                else
-                {
-                    units[i] = new RangedUnit(x, y, factions[factionIndex]);
+                else {
+                     unit = new RangedUnit(x, y, factions[factionIndex]);
                 }
-                map[x, y] = units[i].Faction[0] + "/" + units[i].Symbol;
+                units[factions[factionIndex]].Add(unit);
+                map[x, y] =  unit.Faction[0] + "/" + unit.Symbol;
             }
         }
 
         private void InitializeBuildings()
         {
-            buildings = new Building[numBuildings];
-
-            for (int i = 0; i < buildings.Length; i++)
+            for (int i = 0; i < numBuildings; i++)
             {
                 int x = GameEngine.random.Next(0, width);
                 int y = GameEngine.random.Next(0, height);
@@ -103,56 +113,50 @@ namespace GADE6112___Task3
                     y = GameEngine.random.Next(0, height);
                 }
 
+                Building building;
                 if (buildingType == 0)
                 {
-                    buildings[i] = new ResourceBuilding(x, y, factions[factionIndex]);
+                    building = new ResourceBuilding(x, y, factions[factionIndex]);
                 }
                 else
                 {
-                    buildings[i] = new FactoryBuilding(x, y, factions[factionIndex], height);
+                    building = new FactoryBuilding(x, y, factions[factionIndex], height);
                 }
-                map[x, y] = buildings[i].Faction[0] + "/" + buildings[i].Symbol;
+                buildings[factions[factionIndex]].Add(building);
+                map[x, y] = building.Faction[0] + "/" + building.Symbol;
             }
         }
 
         public void AddUnit(Unit unit)
         {
-            //We can use Array.Resize, but let's do it ourselves
-            Unit[] resizeUnits = new Unit[units.Length + 1];
-
-            for (int i = 0; i < units.Length; i++)
-            {
-                resizeUnits[i] = units[i];
-            }
-            resizeUnits[resizeUnits.Length - 1] = unit;
-            units = resizeUnits;
-
-            //It would make sense to use List instead - Lists can change size dynamically
+            units[unit.Faction].Add(unit);
         }
 
         public void AddBuilding(Building building)
         {
-            Array.Resize(ref buildings, buildings.Length + 1);
-            buildings[buildings.Length - 1] = building;
+            buildings[building.Faction].Add(building);
         }
 
-        public virtual Target GetClosestTarget(Unit unit)
+        public virtual Target GetClosestTarget(Unit unit, string[] ignoreFactions)
         {
             double closestDistance = int.MaxValue;
             Target closestTarget = null;
 
+            //create a list of all the targets not in the unit's faction
             List<Target> targets = new List<Target>();
-            targets.AddRange(units);
-            targets.AddRange(buildings);
-
-            foreach (Target target in targets)
-            {
-                //check if this target is a unit and if it is the unit that is seeking a target
-                if(target is Unit && (Unit)target == unit) {
-                    continue; //continue so that unit doesn't attack itself
+            foreach(string faction in factions) {
+                //targets of our own faction or in the ignore list are skipped
+                if(faction == unit.Faction || Array.IndexOf(ignoreFactions, faction) >= 0) {
+                    continue;
                 }
-                // we don't members of our faction or destroyed units.
-                if (target.Faction == unit.Faction || target.IsDestroyed) {
+                targets.AddRange(units[faction]);
+                targets.AddRange(buildings[faction]);
+            }
+
+            //no need to check if we are attacking units or buildings of our own faction
+            //since we now only have a list of targets from other factions
+            foreach (Target target in targets) {
+                if (target.IsDestroyed) {
                     continue;
                 }
 
@@ -167,23 +171,27 @@ namespace GADE6112___Task3
             return closestTarget;
         }
 
+        public List<Unit> GetUnitsByFaction(string faction) {
+            return units[faction];
+        }
+
+        public List<Building> GetBuildingsByFaction(string faction) {
+            return buildings[faction];
+        }
+
         public void UpdateMap()
         {
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
                     map[x, y] = "   ";
                 }
             }
 
-            foreach (Unit unit in units)
-            {
+            foreach (Unit unit in Units) {
                 map[unit.X, unit.Y] = unit.Symbol + "|" + unit.Faction[0];
             }
 
-            foreach (Building building in buildings)
-            {
+            foreach (Building building in Buildings) {
                 map[building.X, building.Y] = building.Symbol + "|" + building.Faction[0];
             }
         }
@@ -204,8 +212,8 @@ namespace GADE6112___Task3
 
         public void Clear()
         {
-            units = new Unit[0];
-            buildings = new Building[0];
+            units = new Dictionary<string, List<Unit>>();
+            buildings = new Dictionary<string, List<Building>>();
         }
     }
 }

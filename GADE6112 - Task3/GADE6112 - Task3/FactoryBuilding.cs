@@ -17,6 +17,8 @@ namespace GADE6112___Task3
         private FactoryType type; //using an int or string is also fine
         private int productionSpeed;
         private int spawnY;
+        private int spawnCost;
+        private int lastProducedRound = 0;
 
         public FactoryBuilding(int x, int y, string faction, int mapHeight) : base(x, y, 100, faction, '~') {
             if(y >= mapHeight - 1){
@@ -27,6 +29,7 @@ namespace GADE6112___Task3
             }
             type = (FactoryType) GameEngine.random.Next(0, 2);
             productionSpeed = GameEngine.random.Next(3, 7);
+            spawnCost = GameEngine.random.Next(10, 15);
         }
 
         public FactoryBuilding(string values) {
@@ -48,6 +51,15 @@ namespace GADE6112___Task3
             get { return productionSpeed; }
         }
 
+        public int SpawnCost {
+            get { return spawnCost; }
+        }
+
+        public bool CanProduce(int round) {
+            int roundsSinceProduced = round - lastProducedRound;
+            return roundsSinceProduced >= productionSpeed;
+        }
+
         public override void Destroy()  {
             isDestroyed = true;
             symbol = '_';
@@ -57,7 +69,8 @@ namespace GADE6112___Task3
             return string.Format($"Factory,{x},{y},{health},{maxHealth},{(int)type},{productionSpeed},{spawnY},{faction},{symbol},{isDestroyed}");
         }
 
-        public Unit SpawnUnit() {
+        public Unit SpawnUnit(int round) {
+            lastProducedRound = round;
             Unit unit;
             if(type == FactoryType.MELEE) {
                 unit = new MeleeUnit(x, spawnY, faction);

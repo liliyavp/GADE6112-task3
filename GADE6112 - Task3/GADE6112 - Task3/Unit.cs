@@ -59,14 +59,18 @@ namespace GADE6112___Task3
             get { return name; }
         }
 
-        public virtual void Attack(Target target) {
+        //returns true if target was destroyed
+        public virtual bool Attack(Target target) {
             isAttacking = true;
             target.Health -= attack;
 
             if (target.Health <= 0) {
                 target.Health = 0;
                 target.Destroy();
+                return true;
             }
+
+            return false;
         }
 
         public override void Destroy() {

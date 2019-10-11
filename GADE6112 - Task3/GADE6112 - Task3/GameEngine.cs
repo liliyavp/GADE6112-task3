@@ -21,13 +21,14 @@ namespace GADE6112___Task3
         bool isGameOver = false;
         string winningFaction = "";
         int round = 0;
+        string[] factions = { "A-Team", "B-Team"};
 
         int loadedMapWidth; //for loading map width;
         int loadedMapHeight; //for loading map height;
 
         public GameEngine(int width, int height)
         {
-            map = new Map(width, height, 10, 10);
+            map = new Map(width, height, factions, 10, 10);
         }
 
         public bool IsGameOver
@@ -65,68 +66,97 @@ namespace GADE6112___Task3
 
         void UpdateUnits()
         {
-            foreach (Unit unit in map.Units)
-            {
-                //ignore this unit if it is destroyed
-                if (unit.IsDestroyed) {
-                    continue;
-                }
+            foreach(string faction in factions) {
+                foreach (Unit unit in map.Units) {
+                    //ignore this unit if it is destroyed
+                    if (unit.IsDestroyed) {
+                        continue;
+                    }
 
-                Target closestTarget = map.GetClosestTarget(unit);
-                if (closestTarget == null) {
-                    //if a unit has no target it means the game has ended
-                    isGameOver = true;
-                    winningFaction = unit.Faction;
-                    map.UpdateMap();
-                    return;
-                }
+                    Target closestTarget = map.GetClosestTarget(unit, new string[] { unit.Faction });
 
-                double healthPercentage = unit.Health / unit.MaxHealth;
-                //units don't run away from buildings
-                if (healthPercentage <= 0.25 && closestTarget is Unit) {
-                    unit.RunAway();
+                    if (closestTarget == null) {
+                        //if a unit has no target it means the game has ended
+                        isGameOver = true;
+                        winningFaction = unit.Faction;
+                        map.UpdateMap();
+                        return;
+                    }
+
+                    double healthPercentage = unit.Health / unit.MaxHealth;
+                    //units don't run away from buildings
+                    if (healthPercentage <= 0.25 && closestTarget is Unit) {
+                        unit.RunAway();
+                    } else if (unit.IsInRange(closestTarget)) {
+                        if (unit.Attack(closestTarget)) {
+                            AddToResourcePoolByFaction(unit.Faction);
+                        }
+                    } else {
+                        unit.Move(closestTarget);
+                    }
+                    StayInBounds(unit, map.width, map.height);
                 }
-                else if (unit.IsInRange(closestTarget)) {
-                    unit.Attack(closestTarget);
-                }
-                else {
-                    unit.Move(closestTarget);
-                }
-                StayInBounds(unit, map.width, map.height);
             }
         }
 
         void UpdateBuildings()
         {
-            foreach (Building building in map.Buildings)
-            {
+            foreach (string faction in factions) {
+                //new resources are only considered at the beginning of the next round
+                int resources = GetResourcesTotalByFaction(faction);
 
-                if (building is FactoryBuilding)
-                {
-                    FactoryBuilding factoryBuilding = (FactoryBuilding)building;
+                foreach (Building building in map.GetBuildingsByFaction(faction)) {
+                    //ignore destroyed buildings
+                    if (building.IsDestroyed) {
+                        continue;
+                    }
 
-                    if (round % factoryBuilding.ProductionSpeed == 0)
-                    {
-                        Unit newUnit = factoryBuilding.SpawnUnit();
-                        map.AddUnit(newUnit);
+                    if (building is FactoryBuilding) {
+                        FactoryBuilding factoryBuilding = (FactoryBuilding)building;
+
+                        if (factoryBuilding.CanProduce(round) && factoryBuilding.SpawnCost <= resources) {
+                            resources -= factoryBuilding.SpawnCost;
+                            Unit newUnit = factoryBuilding.SpawnUnit(round);
+                            map.AddUnit(newUnit);
+                        }
+                    } else if (building is ResourceBuilding) {
+                        ResourceBuilding resourceBuilding = (ResourceBuilding)building;
+                        resourceBuilding.GenerateResources();
                     }
                 }
-                else if (building is ResourceBuilding)
-                {
+            }
+        }
+
+        int GetResourcesTotalByFaction(string faction) {
+            int totalResources = 0;
+
+            foreach (Building building in map.GetBuildingsByFaction(faction)) {
+                //we are interested in resource buildings that have not been destroyed
+                if (building is ResourceBuilding && !building.IsDestroyed) {
                     ResourceBuilding resourceBuilding = (ResourceBuilding)building;
-                    resourceBuilding.GenerateResources();
+                    totalResources += resourceBuilding.Generated;
+                }
+            }
+            return totalResources;
+        }
+
+        void AddToResourcePoolByFaction(string faction) {
+            foreach (Building building in map.GetBuildingsByFaction(faction)) {
+                if (building is ResourceBuilding && !building.IsDestroyed) {
+                    ResourceBuilding resourceBuilding = (ResourceBuilding)building;
+                    resourceBuilding.Pool += 1;
                 }
             }
         }
 
         public int NumUnits
         {
-            get { return map.Units.Length; }
+            get { return map.Units.Count; }
         }
 
         public int NumBuildings
         {
-            get { return map.Buildings.Length; }
+            get { return map.Buildings.Count; } 
         }
 
         public int NumUnitsAlive {
@@ -180,22 +210,22 @@ namespace GADE6112___Task3
 
         public void Reset(int width, int height)
         {
-            map = new Map(width, height, 10, 10);
+            map = new Map(width, height, factions, 10, 10);
             isGameOver = false;
             round = 0;
         }
 
         public void SaveGame()
         {
-            Save(UNITS_FILENAME, map.Units);
-            Save(BUIDLINGS_FILENAME, map.Buildings);
+            Save(UNITS_FILENAME, map.Units.ToArray());
+            Save(BUIDLINGS_FILENAME, map.Buildings.ToArray());
             SaveSettings();
         }
 
         public void LoadGame()
         {
             LoadSettings();
-            map = new Map(loadedMapWidth, loadedMapHeight);
+            map = new Map(loadedMapWidth, loadedMapHeight, factions);
             Load(UNITS_FILENAME);
             Load(BUIDLINGS_FILENAME);
             map.UpdateMap();
