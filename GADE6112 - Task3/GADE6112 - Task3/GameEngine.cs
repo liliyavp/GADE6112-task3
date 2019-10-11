@@ -68,15 +68,13 @@ namespace GADE6112___Task3
             foreach (Unit unit in map.Units)
             {
                 //ignore this unit if it is destroyed
-                if (unit.IsDestroyed)
-                {
+                if (unit.IsDestroyed) {
                     continue;
                 }
 
-                Unit closestUnit = unit.GetClosestUnit(map.Units);
-                if (closestUnit == null)
-                {
-                    //if a unit has not target it means the game has ended
+                Target closestTarget = map.GetClosestTarget(unit);
+                if (closestTarget == null) {
+                    //if a unit has no target it means the game has ended
                     isGameOver = true;
                     winningFaction = unit.Faction;
                     map.UpdateMap();
@@ -84,17 +82,15 @@ namespace GADE6112___Task3
                 }
 
                 double healthPercentage = unit.Health / unit.MaxHealth;
-                if (healthPercentage <= 0.25)
-                {
+                //units don't run away from buildings
+                if (healthPercentage <= 0.25 && closestTarget is Unit) {
                     unit.RunAway();
                 }
-                else if (unit.IsInRange(closestUnit))
-                {
-                    unit.Attack(closestUnit);
+                else if (unit.IsInRange(closestTarget)) {
+                    unit.Attack(closestTarget);
                 }
-                else
-                {
-                    unit.Move(closestUnit);
+                else {
+                    unit.Move(closestTarget);
                 }
                 StayInBounds(unit, map.width, map.height);
             }
@@ -131,6 +127,30 @@ namespace GADE6112___Task3
         public int NumBuildings
         {
             get { return map.Buildings.Length; }
+        }
+
+        public int NumUnitsAlive {
+            get {
+                int alive = 0;
+                foreach(Unit unit in map.Units) {
+                    if (!unit.IsDestroyed) {
+                        alive++;
+                    }
+                }
+                return alive;
+            }
+        }
+
+        public int NumBuildingsAlive {
+            get {
+                int alive = 0;
+                foreach (Building building in map.Buildings) {
+                    if (!building.IsDestroyed) {
+                        alive++;
+                    }
+                }
+                return alive;
+            }
         }
 
         public string MapDisplay

@@ -136,6 +136,37 @@ namespace GADE6112___Task3
             buildings[buildings.Length - 1] = building;
         }
 
+        public virtual Target GetClosestTarget(Unit unit)
+        {
+            double closestDistance = int.MaxValue;
+            Target closestTarget = null;
+
+            List<Target> targets = new List<Target>();
+            targets.AddRange(units);
+            targets.AddRange(buildings);
+
+            foreach (Target target in targets)
+            {
+                //check if this target is a unit and if it is the unit that is seeking a target
+                if(target is Unit && (Unit)target == unit) {
+                    continue; //continue so that unit doesn't attack itself
+                }
+                // we don't members of our faction or destroyed units.
+                if (target.Faction == unit.Faction || target.IsDestroyed) {
+                    continue;
+                }
+
+                double distance = unit.GetDistance(target);
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestTarget = target;
+                }
+            }
+
+            return closestTarget;
+        }
+
         public void UpdateMap()
         {
             for (int y = 0; y < height; y++)

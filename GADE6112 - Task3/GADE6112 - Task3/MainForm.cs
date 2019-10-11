@@ -56,8 +56,8 @@ namespace GADE6112___Task3
             lblRound.Text = "Round: " + engine.Round;
             tbxUnitsInfo.Text = engine.GetUnitInfo();
             tbxBuildingsInfo.Text = engine.GetBuildingsInfo();
-            lblUnits.Text = "Units (" + engine.NumUnits + ")";
-            lblBuildings.Text = "Buildings (" + engine.NumBuildings + ")";
+            lblUnits.Text = "Units (" + engine.NumUnitsAlive + "/" + engine.NumUnits + ")";
+            lblBuildings.Text = "Buildings (" + engine.NumBuildingsAlive + "/" + engine.NumBuildings + ")";
         }
 
         private void BtnStartPauseSim_Click(object sender, EventArgs e)
