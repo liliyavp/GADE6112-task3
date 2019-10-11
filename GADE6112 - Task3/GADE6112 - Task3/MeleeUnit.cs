@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GADE6112___Task2
+namespace GADE6112___Task3
 {
     class MeleeUnit : Unit
     {
@@ -13,7 +13,10 @@ namespace GADE6112___Task2
         public MeleeUnit(string values) : base(values) { }
 
         public override string Save() {
-            return string.Format($"Melee,{x},{y},{health},{maxHealth},{speed},{attack},{attackRange},{faction},{symbol},{name},{isDestroyed}");
+            return string.Format(
+                $"Melee,{x},{y},{health},{maxHealth},{speed},{attack},{attackRange}," +
+                $"{faction},{symbol},{name},{isDestroyed}"
+            );
         }
     }
 }

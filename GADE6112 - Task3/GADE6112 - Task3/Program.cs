@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GADE6112___Task2
+namespace GADE6112___Task3
 {
     static class Program
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GADE6112___Task2
+namespace GADE6112___Task3
 {
     public enum ResourceType {
         WOOD,

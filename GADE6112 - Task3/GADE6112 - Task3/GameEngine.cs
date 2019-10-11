@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GADE6112___Task2
+namespace GADE6112___Task3
 {
-    class GameEngine {
+    class GameEngine
+    {
         //Share a single Random object across all classes.
         //eg. GameEngine.random.Next(5);
         public static Random random = new Random();
@@ -21,39 +22,60 @@ namespace GADE6112___Task2
         string winningFaction = "";
         int round = 0;
 
-        public GameEngine()
+        int loadedMapWidth; //for loading map width;
+        int loadedMapHeight; //for loading map height;
+
+        public GameEngine(int width, int height)
         {
-            map = new Map(10, 10);
+            map = new Map(width, height, 10, 10);
         }
 
-        public bool IsGameOver {
+        public bool IsGameOver
+        {
             get { return isGameOver; }
         }
 
-        public string WinningFaction {
+        public string WinningFaction
+        {
             get { return winningFaction; }
         }
 
-        public int Round {
+        public int Round
+        {
             get { return round; }
         }
 
-        public void GameLoop() {
+        public int LoadedMapWidth
+        {
+            get { return loadedMapWidth;  }
+        }
+
+        public int LoadedMapHeight
+        {
+            get { return loadedMapHeight; }
+        }
+
+        public void GameLoop()
+        {
             UpdateUnits();
             UpdateBuildings();
             map.UpdateMap();
             round++;
         }
 
-        void UpdateUnits() {
-            foreach (Unit unit in map.Units) {
+        void UpdateUnits()
+        {
+            foreach (Unit unit in map.Units)
+            {
                 //ignore this unit if it is destroyed
-                if (unit.IsDestroyed) {
+                if (unit.IsDestroyed)
+                {
                     continue;
                 }
 
                 Unit closestUnit = unit.GetClosestUnit(map.Units);
-                if (closestUnit == null) {
+                if (closestUnit == null)
+                {
                     //if a unit has not target it means the game has ended
                     isGameOver = true;
                     winningFaction = unit.Faction;
@@ -62,98 +84,119 @@ namespace GADE6112___Task2
                 }
 
                 double healthPercentage = unit.Health / unit.MaxHealth;
-                if (healthPercentage <= 0.25) {
+                if (healthPercentage <= 0.25)
+                {
                     unit.RunAway();
                 }
-                else if (unit.IsInRange(closestUnit)) {
+                else if (unit.IsInRange(closestUnit))
+                {
                     unit.Attack(closestUnit);
                 }
-                else {
+                else
+                {
                     unit.Move(closestUnit);
                 }
-                StayInBounds(unit, map.Size);
+                StayInBounds(unit, map.width, map.height);
             }
         }
 
-        void UpdateBuildings() {
-            foreach (Building building in map.Buildings) {
+        void UpdateBuildings()
+        {
+            foreach (Building building in map.Buildings)
+            {
 
-                if(building is FactoryBuilding) {
-                    FactoryBuilding factoryBuilding = (FactoryBuilding) building;
+                if (building is FactoryBuilding)
+                {
+                    FactoryBuilding factoryBuilding = (FactoryBuilding)building;
 
-                    if(round % factoryBuilding.ProductionSpeed == 0) {
+                    if (round % factoryBuilding.ProductionSpeed == 0)
+                    {
                         Unit newUnit = factoryBuilding.SpawnUnit();
                         map.AddUnit(newUnit);
                     }
                 }
-                else if(building is ResourceBuilding) {
-                    ResourceBuilding resourceBuilding = (ResourceBuilding) building;
+                else if (building is ResourceBuilding)
+                {
+                    ResourceBuilding resourceBuilding = (ResourceBuilding)building;
                     resourceBuilding.GenerateResources();
                 }
             }
         }
 
-        public int NumUnits {
+        public int NumUnits
+        {
             get { return map.Units.Length; }
         }
 
-        public int NumBuildings {
+        public int NumBuildings
+        {
             get { return map.Buildings.Length; }
         }
 
-        public string MapDisplay {
+        public string MapDisplay
+        {
             get { return map.GetMapDisplay(); }
         }
 
-        public string GetUnitInfo() {
+        public string GetUnitInfo()
+        {
             string unitInfo = "";
-            foreach (Unit unit in map.Units) {
+            foreach (Unit unit in map.Units)
+            {
                 unitInfo += unit + Environment.NewLine;
             }
             return unitInfo;
         }
 
-        public string GetBuildingsInfo() {
+        public string GetBuildingsInfo()
+        {
             string buildingsInfo = "";
-            foreach (Building building in map.Buildings) {
+            foreach (Building building in map.Buildings)
+            {
                 buildingsInfo += building + Environment.NewLine;
             }
             return buildingsInfo;
         }
 
-        public void Reset() {
-            map.Reset();
+        public void Reset(int width, int height)
+        {
+            map = new Map(width, height, 10, 10);
             isGameOver = false;
             round = 0;
         }
 
-        public void SaveGame() {
+        public void SaveGame()
+        {
             Save(UNITS_FILENAME, map.Units);
             Save(BUIDLINGS_FILENAME, map.Buildings);
-            SaveRound();
+            SaveSettings();
         }
 
-        public void LoadGame() {
-            map.Clear();
+        public void LoadGame()
+        {
+            LoadSettings();
+            map = new Map(loadedMapWidth, loadedMapHeight);
             Load(UNITS_FILENAME);
             Load(BUIDLINGS_FILENAME);
-            LoadRound();
             map.UpdateMap();
         }
 
-        private void Load(string filename){
+        private void Load(string filename)
+        {
             FileStream inFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
             StreamReader reader = new StreamReader(inFile);
             string recordIn;
 
             recordIn = reader.ReadLine();
-            while(recordIn != null) {
+            while (recordIn != null)
+            {
                 int length = recordIn.IndexOf(",");
-                
+
                 string firstField = recordIn.Substring(0, length);
 
-                switch (firstField) {
-                    case "Melee":  map.AddUnit(new MeleeUnit(recordIn)); break;
+                switch (firstField)
+                {
+                    case "Melee": map.AddUnit(new MeleeUnit(recordIn)); break;
                     case "Ranged": map.AddUnit(new RangedUnit(recordIn)); break;
                     case "Factory": map.AddBuilding(new FactoryBuilding(recordIn)); break;
                     case "Resource": map.AddBuilding(new ResourceBuilding(recordIn)); break;
@@ -165,16 +208,19 @@ namespace GADE6112___Task2
             inFile.Close();
         }
 
-        private void Save(string filename, object[] objects) {
+        private void Save(string filename, object[] objects)
+        {
             FileStream outFile = new FileStream(filename, FileMode.Create, FileAccess.Write);
             StreamWriter writer = new StreamWriter(outFile);
             foreach (object obj in objects)
             {
-                if (obj is Unit) {
+                if (obj is Unit)
+                {
                     Unit unit = (Unit)obj;
                     writer.WriteLine(unit.Save());
                 }
-                else if(obj is Building){
+                else if (obj is Building)
+                {
                     Building unit = (Building)obj;
                     writer.WriteLine(unit.Save());
                 }
@@ -183,35 +229,46 @@ namespace GADE6112___Task2
             outFile.Close();
         }
 
-        private void SaveRound()  {
+        private void SaveSettings()
+        {
             FileStream outFile = new FileStream(ROUND_FILENAME, FileMode.Create, FileAccess.Write);
             StreamWriter writer = new StreamWriter(outFile);
             writer.WriteLine(round);
+            writer.WriteLine(map.width);
+            writer.WriteLine(map.height);
             writer.Close();
             outFile.Close();
         }
 
-        private void LoadRound() {
+        private void LoadSettings()
+        {
             FileStream inFile = new FileStream(ROUND_FILENAME, FileMode.Open, FileAccess.Read);
             StreamReader reader = new StreamReader(inFile);
             round = int.Parse(reader.ReadLine());
+            loadedMapWidth = int.Parse(reader.ReadLine());
+            loadedMapHeight = int.Parse(reader.ReadLine());
             reader.Close();
             inFile.Close();
         }
 
-        private void StayInBounds(Unit unit, int size) {
-            if(unit.X < 0) {
+        private void StayInBounds(Unit unit, int width, int height)
+        {
+            if (unit.X < 0)
+            {
                 unit.X = 0;
             }
-            else if(unit.X >= size){
-                unit.X = size - 1;
+            else if (unit.X >= width)
+            {
+                unit.X = width - 1;
             }
 
-            if (unit.Y < 0){
+            if (unit.Y < 0)
+            {
                 unit.Y = 0;
             }
-            else if (unit.Y >= size){
-                unit.Y = size - 1;
+            else if (unit.Y >= height)
+            {
+                unit.Y = height - 1;
             }
         }
     }

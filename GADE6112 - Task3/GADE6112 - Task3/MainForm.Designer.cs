@@ -1,4 +1,4 @@
-﻿namespace GADE6112___Task2
+﻿namespace GADE6112___Task3
 {
     partial class FrmMain
     {
@@ -37,11 +37,17 @@
             this.lblBuildings = new System.Windows.Forms.Label();
             this.tbxUnitsInfo = new System.Windows.Forms.TextBox();
             this.tbxBuildingsInfo = new System.Windows.Forms.TextBox();
+            this.numHeight = new System.Windows.Forms.NumericUpDown();
+            this.numWidth = new System.Windows.Forms.NumericUpDown();
+            this.lblWidth = new System.Windows.Forms.Label();
+            this.lblHeight = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
             this.SuspendLayout();
             // 
             // btnStartPauseSim
             // 
-            this.btnStartPauseSim.Location = new System.Drawing.Point(715, 54);
+            this.btnStartPauseSim.Location = new System.Drawing.Point(838, 129);
             this.btnStartPauseSim.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnStartPauseSim.Name = "btnStartPauseSim";
             this.btnStartPauseSim.Size = new System.Drawing.Size(229, 33);
@@ -57,7 +63,7 @@
             this.lblMap.Font = new System.Drawing.Font("Courier New", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblMap.Location = new System.Drawing.Point(12, 11);
             this.lblMap.Name = "lblMap";
-            this.lblMap.Size = new System.Drawing.Size(682, 601);
+            this.lblMap.Size = new System.Drawing.Size(805, 692);
             this.lblMap.TabIndex = 1;
             this.lblMap.Text = "EMPTY MAP";
             this.lblMap.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -65,7 +71,7 @@
             // lblRound
             // 
             this.lblRound.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblRound.Location = new System.Drawing.Point(715, 11);
+            this.lblRound.Location = new System.Drawing.Point(838, 11);
             this.lblRound.Name = "lblRound";
             this.lblRound.Size = new System.Drawing.Size(228, 31);
             this.lblRound.TabIndex = 3;
@@ -74,7 +80,7 @@
             // 
             // btnLoad
             // 
-            this.btnLoad.Location = new System.Drawing.Point(715, 130);
+            this.btnLoad.Location = new System.Drawing.Point(838, 205);
             this.btnLoad.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.Size = new System.Drawing.Size(229, 33);
@@ -85,7 +91,7 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(715, 92);
+            this.btnSave.Location = new System.Drawing.Point(838, 167);
             this.btnSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(229, 33);
@@ -97,7 +103,7 @@
             // lblUnits
             // 
             this.lblUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblUnits.Location = new System.Drawing.Point(715, 177);
+            this.lblUnits.Location = new System.Drawing.Point(839, 269);
             this.lblUnits.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblUnits.Name = "lblUnits";
             this.lblUnits.Size = new System.Drawing.Size(228, 31);
@@ -108,7 +114,7 @@
             // lblBuildings
             // 
             this.lblBuildings.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBuildings.Location = new System.Drawing.Point(714, 401);
+            this.lblBuildings.Location = new System.Drawing.Point(838, 493);
             this.lblBuildings.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBuildings.Name = "lblBuildings";
             this.lblBuildings.Size = new System.Drawing.Size(229, 31);
@@ -118,8 +124,8 @@
             // 
             // tbxUnitsInfo
             // 
-            this.tbxUnitsInfo.Location = new System.Drawing.Point(715, 208);
-            this.tbxUnitsInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbxUnitsInfo.Location = new System.Drawing.Point(839, 300);
+            this.tbxUnitsInfo.Margin = new System.Windows.Forms.Padding(4);
             this.tbxUnitsInfo.Multiline = true;
             this.tbxUnitsInfo.Name = "tbxUnitsInfo";
             this.tbxUnitsInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -128,20 +134,92 @@
             // 
             // tbxBuildingsInfo
             // 
-            this.tbxBuildingsInfo.Location = new System.Drawing.Point(715, 432);
-            this.tbxBuildingsInfo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tbxBuildingsInfo.Location = new System.Drawing.Point(839, 524);
+            this.tbxBuildingsInfo.Margin = new System.Windows.Forms.Padding(4);
             this.tbxBuildingsInfo.Multiline = true;
             this.tbxBuildingsInfo.Name = "tbxBuildingsInfo";
             this.tbxBuildingsInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tbxBuildingsInfo.Size = new System.Drawing.Size(228, 179);
             this.tbxBuildingsInfo.TabIndex = 15;
             // 
+            // numHeight
+            // 
+            this.numHeight.Location = new System.Drawing.Point(954, 83);
+            this.numHeight.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numHeight.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numHeight.Name = "numHeight";
+            this.numHeight.Size = new System.Drawing.Size(113, 22);
+            this.numHeight.TabIndex = 16;
+            this.numHeight.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.numHeight.ValueChanged += new System.EventHandler(this.NumHeight_ValueChanged);
+            // 
+            // numWidth
+            // 
+            this.numWidth.Location = new System.Drawing.Point(838, 83);
+            this.numWidth.Maximum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numWidth.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numWidth.Name = "numWidth";
+            this.numWidth.Size = new System.Drawing.Size(113, 22);
+            this.numWidth.TabIndex = 17;
+            this.numWidth.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.numWidth.ValueChanged += new System.EventHandler(this.NumWidth_ValueChanged);
+            // 
+            // lblWidth
+            // 
+            this.lblWidth.AutoSize = true;
+            this.lblWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWidth.Location = new System.Drawing.Point(900, 61);
+            this.lblWidth.Name = "lblWidth";
+            this.lblWidth.Size = new System.Drawing.Size(49, 17);
+            this.lblWidth.TabIndex = 18;
+            this.lblWidth.Text = "Width";
+            this.lblWidth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblHeight
+            // 
+            this.lblHeight.AutoSize = true;
+            this.lblHeight.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblHeight.Location = new System.Drawing.Point(1011, 61);
+            this.lblHeight.Name = "lblHeight";
+            this.lblHeight.Size = new System.Drawing.Size(55, 17);
+            this.lblHeight.TabIndex = 19;
+            this.lblHeight.Text = "Height";
+            this.lblHeight.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(960, 626);
+            this.ClientSize = new System.Drawing.Size(1080, 721);
+            this.Controls.Add(this.lblHeight);
+            this.Controls.Add(this.lblWidth);
+            this.Controls.Add(this.numWidth);
+            this.Controls.Add(this.numHeight);
             this.Controls.Add(this.tbxBuildingsInfo);
             this.Controls.Add(this.tbxUnitsInfo);
             this.Controls.Add(this.lblBuildings);
@@ -154,6 +232,8 @@
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "FrmMain";
             this.Text = "GADE6211 - Task2";
+            ((System.ComponentModel.ISupportInitialize)(this.numHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numWidth)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -170,6 +250,10 @@
         private System.Windows.Forms.Label lblBuildings;
         private System.Windows.Forms.TextBox tbxUnitsInfo;
         private System.Windows.Forms.TextBox tbxBuildingsInfo;
+        private System.Windows.Forms.NumericUpDown numHeight;
+        private System.Windows.Forms.NumericUpDown numWidth;
+        private System.Windows.Forms.Label lblWidth;
+        private System.Windows.Forms.Label lblHeight;
     }
 }
 

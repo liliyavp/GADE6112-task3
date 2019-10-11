@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GADE6112___Task2
+namespace GADE6112___Task3
 {
     class RangedUnit : Unit  {
         public RangedUnit(int x, int y, string faction) : base(x, y, 100, 1, 10, 3, faction, '-', "Archer") { }

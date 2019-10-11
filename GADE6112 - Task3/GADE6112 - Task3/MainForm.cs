@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GADE6112___Task2
+namespace GADE6112___Task3
 {
     public partial class FrmMain : Form
     {
@@ -16,10 +16,14 @@ namespace GADE6112___Task2
         Timer timer;
         GameState gameState = GameState.PAUSED;
 
+        int mapWidth = 20;
+        int mapHeight = 20;
+        bool engineReset = true;
+
         public FrmMain()
         {
             InitializeComponent();
-            engine = new GameEngine();
+            engine = new GameEngine(mapWidth, mapHeight);
             UpdateUI();
 
             timer = new Timer();
@@ -39,6 +43,10 @@ namespace GADE6112___Task2
                 lblMap.Text = engine.WinningFaction + " WON!\n" + lblMap.Text;
                 gameState = GameState.ENDED;
                 btnStartPauseSim.Text = "RESTART";
+
+                numWidth.Enabled = true;
+                numHeight.Enabled = true;
+                engineReset = false;
             }
         }
 
@@ -61,13 +69,16 @@ namespace GADE6112___Task2
                 btnStartPauseSim.Text = "START";
             }
             else{
-                if (gameState == GameState.ENDED)
+                if (gameState == GameState.ENDED && !engineReset)
                 {
-                    engine.Reset();
+                    engine.Reset(mapWidth, mapHeight);
                 }
                 timer.Start();
                 gameState = GameState.RUNNING;
                 btnStartPauseSim.Text = "PAUSE";
+
+                numWidth.Enabled = false;
+                numHeight.Enabled = false;
             }
         }
 
@@ -81,6 +92,24 @@ namespace GADE6112___Task2
         {
             engine.LoadGame();
             lblMap.Text = "GAME LOADED\n" + engine.MapDisplay;
+            numWidth.Value = engine.LoadedMapWidth;
+            numHeight.Value = engine.LoadedMapHeight;
+        }
+
+        private void NumWidth_ValueChanged(object sender, EventArgs e)
+        {
+            mapWidth = (int) numWidth.Value;
+            engine.Reset(mapWidth, mapHeight);
+            engineReset = true;
+            UpdateUI();
+        }
+
+        private void NumHeight_ValueChanged(object sender, EventArgs e)
+        {
+            mapHeight = (int) numHeight.Value;
+            engine.Reset(mapWidth, mapHeight);
+            engineReset = true;
+            UpdateUI();
         }
     }
 

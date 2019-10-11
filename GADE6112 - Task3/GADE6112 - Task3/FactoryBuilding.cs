@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GADE6112___Task2
+namespace GADE6112___Task3
 {
     enum FactoryType
     {
@@ -18,8 +18,8 @@ namespace GADE6112___Task2
         private int productionSpeed;
         private int spawnY;
 
-        public FactoryBuilding(int x, int y, string faction) : base(x, y, 100, faction, '~') {
-            if(y >= Map.SIZE - 1){
+        public FactoryBuilding(int x, int y, string faction, int mapHeight) : base(x, y, 100, faction, '~') {
+            if(y >= mapHeight - 1){
                 spawnY = y - 1;
             }
             else{
