@@ -9,6 +9,10 @@ namespace GADE6112___Task3
 {
     class GameEngine
     {
+        const string A_TEAM = "A-Team";
+        const string B_TEAM = "B-Team";
+        const string WIZARDS = "Wizards";
+
         //Share a single Random object across all classes.
         //eg. GameEngine.random.Next(5);
         public static Random random = new Random();
@@ -18,17 +22,22 @@ namespace GADE6112___Task3
         const string ROUND_FILENAME = "rounds.txt";
 
         Map map;
+        UnitAndBuildingManager manager;
+
         bool isGameOver = false;
         string winningFaction = "";
         int round = 0;
-        string[] factions = { "A-Team", "B-Team"};
+        string[] factions = { A_TEAM, B_TEAM, WIZARDS};
 
         int loadedMapWidth; //for loading map width;
         int loadedMapHeight; //for loading map height;
 
         public GameEngine(int width, int height)
         {
-            map = new Map(width, height, factions, 10, 10);
+            Reset(width, height);
+            //map = new Map(width, height);
+            //manager = new UnitAndBuildingManager();
+            //CreateUnitsAndBuildings();
         }
 
         public bool IsGameOver
@@ -60,40 +69,74 @@ namespace GADE6112___Task3
         {
             UpdateUnits();
             UpdateBuildings();
-            map.UpdateMap();
+            map.UpdateMap(manager);
             round++;
         }
 
         void UpdateUnits()
         {
-            foreach(string faction in factions) {
-                foreach (Unit unit in map.Units) {
+
+            foreach (string faction in factions) {
+
+                string[] ignoreFactions = GetFactionsToIgnore(faction);
+
+                foreach (Unit unit in manager.Units) {
                     //ignore this unit if it is destroyed
                     if (unit.IsDestroyed) {
+                        unit.CheckHide();
                         continue;
                     }
 
-                    Target closestTarget = map.GetClosestTarget(unit, new string[] { unit.Faction });
+                    Target closestTarget = manager.GetClosestTarget(unit, ignoreFactions);
+
+                    if (faction == WIZARDS) {
+                        //wizards only target units
+                        closestTarget = manager.GetClosestTarget(unit, ignoreFactions, true, false);
+                    }
 
                     if (closestTarget == null) {
                         //if a unit has no target it means the game has ended
                         isGameOver = true;
                         winningFaction = unit.Faction;
-                        map.UpdateMap();
+
+                        map.UpdateMap(manager);
                         return;
                     }
 
-                    double healthPercentage = unit.Health / unit.MaxHealth;
-                    //units don't run away from buildings
-                    if (healthPercentage <= 0.25 && closestTarget is Unit) {
+                    double healthPercentage = unit.Health / (double)unit.MaxHealth;
+                    bool isWizard = unit is WizardUnit;
+
+                    //if not a wizard and the target is a unit, run away if health is below 25% (can still attack buildings)
+                    if (healthPercentage <= 0.25 && closestTarget is Unit && !isWizard) {
                         unit.RunAway();
-                    } else if (unit.IsInRange(closestTarget)) {
+                    
+                    }
+                    //if a wizard health is below 50%, run away (can't attack buildings)
+                    else if (healthPercentage <= 0.5 && isWizard) {
+                        unit.RunAway();
+                    
+                    }
+                    //if target is in range and this unit is not a wizard, attack closest target
+                    else if (unit.IsInRange(closestTarget) && !isWizard) {
                         if (unit.Attack(closestTarget)) {
+                            //if killed unit, add to resource pool of all faction resource buildings
                             AddToResourcePoolByFaction(unit.Faction);
                         }
-                    } else {
+                    
+                    }
+                    //if target is in range and  this unit is a wizard, attack all targets in range
+                    else if (unit.IsInRange(closestTarget) && isWizard) {
+                        //find all units close to the target we are attacking
+                        foreach(Target targetInArea in manager.GetTargetsInArea(closestTarget, ignoreFactions, true, false)) {
+                            unit.Attack(targetInArea);
+                        }
+                    
+                    }
+                    //if none of the above just move the unit
+                    else {
                         unit.Move(closestTarget);
                     }
+
                     StayInBounds(unit, map.width, map.height);
                 }
             }
@@ -105,9 +148,10 @@ namespace GADE6112___Task3
                 //new resources are only considered at the beginning of the next round
                 int resources = GetResourcesTotalByFaction(faction);
 
-                foreach (Building building in map.GetBuildingsByFaction(faction)) {
+                foreach (Building building in manager.GetBuildingsByFaction(faction)) {
                     //ignore destroyed buildings
                     if (building.IsDestroyed) {
+                        building.CheckHide();
                         continue;
                     }
 
@@ -117,7 +161,7 @@ namespace GADE6112___Task3
                         if (factoryBuilding.CanProduce(round) && factoryBuilding.SpawnCost <= resources) {
                             resources -= factoryBuilding.SpawnCost;
                             Unit newUnit = factoryBuilding.SpawnUnit(round);
-                            map.AddUnit(newUnit);
+                            manager.AddUnit(newUnit);
                         }
                     } else if (building is ResourceBuilding) {
                         ResourceBuilding resourceBuilding = (ResourceBuilding)building;
@@ -130,7 +174,7 @@ namespace GADE6112___Task3
         int GetResourcesTotalByFaction(string faction) {
             int totalResources = 0;
 
-            foreach (Building building in map.GetBuildingsByFaction(faction)) {
+            foreach (Building building in manager.GetBuildingsByFaction(faction)) {
                 //we are interested in resource buildings that have not been destroyed
                 if (building is ResourceBuilding && !building.IsDestroyed) {
                     ResourceBuilding resourceBuilding = (ResourceBuilding)building;
@@ -141,7 +185,7 @@ namespace GADE6112___Task3
         }
 
         void AddToResourcePoolByFaction(string faction) {
-            foreach (Building building in map.GetBuildingsByFaction(faction)) {
+            foreach (Building building in manager.GetBuildingsByFaction(faction)) {
                 if (building is ResourceBuilding && !building.IsDestroyed) {
                     ResourceBuilding resourceBuilding = (ResourceBuilding)building;
                     resourceBuilding.Pool += 1;
@@ -149,20 +193,39 @@ namespace GADE6112___Task3
             }
         }
 
+        string[] GetFactionsToIgnore(string faction) {
+
+            bool canAttackWizards = false;
+            if (faction == A_TEAM) {
+                canAttackWizards = manager.AllUnitsDestroyed(B_TEAM);
+            }else if(faction == B_TEAM) {
+                canAttackWizards = manager.AllUnitsDestroyed(A_TEAM);
+            }
+
+            string[] ignoreFactions = new string[] { faction, WIZARDS };
+            if (faction == WIZARDS || canAttackWizards) {
+                //wizards ignore only their own faction 
+                //and other units stop ignoring wizards if there are no units alive in the other team
+                ignoreFactions = new string[] { faction };
+            }
+
+            return ignoreFactions;
+        }
+
         public int NumUnits
         {
-            get { return map.Units.Count; }
+            get { return manager.Units.Count; }
         }
 
         public int NumBuildings
         {
-            get { return map.Buildings.Count; } 
+            get { return manager.Buildings.Count; } 
         }
 
         public int NumUnitsAlive {
             get {
                 int alive = 0;
-                foreach(Unit unit in map.Units) {
+                foreach(Unit unit in manager.Units) {
                     if (!unit.IsDestroyed) {
                         alive++;
                     }
@@ -174,7 +237,7 @@ namespace GADE6112___Task3
         public int NumBuildingsAlive {
             get {
                 int alive = 0;
-                foreach (Building building in map.Buildings) {
+                foreach (Building building in manager.Buildings) {
                     if (!building.IsDestroyed) {
                         alive++;
                     }
@@ -191,7 +254,7 @@ namespace GADE6112___Task3
         public string GetUnitInfo()
         {
             string unitInfo = "";
-            foreach (Unit unit in map.Units)
+            foreach (Unit unit in manager.Units)
             {
                 unitInfo += unit + Environment.NewLine;
             }
@@ -201,34 +264,64 @@ namespace GADE6112___Task3
         public string GetBuildingsInfo()
         {
             string buildingsInfo = "";
-            foreach (Building building in map.Buildings)
+            foreach (Building building in manager.Buildings)
             {
                 buildingsInfo += building + Environment.NewLine;
             }
             return buildingsInfo;
         }
 
+        public string GetDetails() {
+            string details = "";
+
+            foreach(string faction in factions) {
+                details += faction + Environment.NewLine;
+                details += "------------------" + Environment.NewLine;
+                details += "Units: " + 
+                    manager.GetUnitsAliveCountByFaction(faction) + "/" + 
+                    manager.GetUnitsByFaction(faction).Count + Environment.NewLine;
+                details += "Buildings: " + 
+                    manager.GetBuildingsAliveCountByFaction(faction) + "/" + 
+                    manager.GetBuildingsByFaction(faction).Count + Environment.NewLine;
+                details += Environment.NewLine;
+            }
+
+            return details;
+        }
+
         public void Reset(int width, int height)
         {
-            map = new Map(width, height, factions, 10, 10);
+            map = new Map(width, height);
+            manager = new UnitAndBuildingManager();
+
+            CreateUnitsAndBuildings();
+            map.UpdateMap(manager);
+
             isGameOver = false;
             round = 0;
         }
 
         public void SaveGame()
         {
-            Save(UNITS_FILENAME, map.Units.ToArray());
-            Save(BUIDLINGS_FILENAME, map.Buildings.ToArray());
+            Save(UNITS_FILENAME, manager.Units.ToArray());
+            Save(BUIDLINGS_FILENAME, manager.Buildings.ToArray());
             SaveSettings();
         }
 
         public void LoadGame()
         {
             LoadSettings();
-            map = new Map(loadedMapWidth, loadedMapHeight, factions);
+
+            map = new Map(loadedMapWidth, loadedMapHeight);
+            manager = new UnitAndBuildingManager();
+            foreach (string faction in factions) {
+                manager.AddFaction(faction);
+            }
+
             Load(UNITS_FILENAME);
             Load(BUIDLINGS_FILENAME);
-            map.UpdateMap();
+
+            map.UpdateMap(manager);
         }
 
         private void Load(string filename)
@@ -246,10 +339,11 @@ namespace GADE6112___Task3
 
                 switch (firstField)
                 {
-                    case "Melee": map.AddUnit(new MeleeUnit(recordIn)); break;
-                    case "Ranged": map.AddUnit(new RangedUnit(recordIn)); break;
-                    case "Factory": map.AddBuilding(new FactoryBuilding(recordIn)); break;
-                    case "Resource": map.AddBuilding(new ResourceBuilding(recordIn)); break;
+                    case "Melee": manager.AddUnit(new MeleeUnit(recordIn)); break;
+                    case "Ranged": manager.AddUnit(new RangedUnit(recordIn)); break;
+                    case "Wizard": manager.AddUnit(new WizardUnit(recordIn)); break;
+                    case "Factory": manager.AddBuilding(new FactoryBuilding(recordIn)); break;
+                    case "Resource": manager.AddBuilding(new ResourceBuilding(recordIn)); break;
                 }
 
                 recordIn = reader.ReadLine();
@@ -299,6 +393,57 @@ namespace GADE6112___Task3
             loadedMapHeight = int.Parse(reader.ReadLine());
             reader.Close();
             inFile.Close();
+        }
+
+        private void CreateUnitsAndBuildings() {
+            foreach (string faction in factions) {
+                manager.AddFaction(faction);
+
+                if (faction != WIZARDS) {
+                    AddUnits(random.Next(5, 10), faction);
+                    AddBuildings(random.Next(10, 15), faction);
+                } else {
+                    AddUnits(random.Next(5, 10), faction);
+                }
+            }
+        }
+
+        private void AddUnits(int numUnits, string faction) {
+            for (int i = 0; i < numUnits; i++) {
+                int x = random.Next(0, map.width);
+                int y = random.Next(0, map.height);
+
+                Unit unit;
+                if (faction != WIZARDS) {
+                    int unitType = random.Next(0, 2);
+                    if (unitType == 0) {
+                        unit = new MeleeUnit(x, y, faction);
+                    } else {
+                        unit = new RangedUnit(x, y, faction);
+                    }
+                } else {
+                    unit = new WizardUnit(x, y, faction);
+                }
+
+                manager.AddUnit(unit);
+            }
+        }
+
+        private void AddBuildings(int numBuildings, string faction) {
+            for (int i = 0; i < numBuildings; i++) {
+                int x = random.Next(0, map.width);
+                int y = random.Next(0, map.height);
+                int buildingType = random.Next(0, 2);
+
+                Building building;
+                if (buildingType == 0) {
+                    building = new FactoryBuilding(x, y, faction, map.height);
+                } else {
+                    building = new ResourceBuilding(x, y, faction);
+                }
+
+                manager.AddBuilding(building);
+            }
         }
 
         private void StayInBounds(Unit unit, int width, int height)

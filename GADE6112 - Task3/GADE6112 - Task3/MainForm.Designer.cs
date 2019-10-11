@@ -41,6 +41,7 @@
             this.numWidth = new System.Windows.Forms.NumericUpDown();
             this.lblWidth = new System.Windows.Forms.Label();
             this.lblHeight = new System.Windows.Forms.Label();
+            this.tbxDetails = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numWidth)).BeginInit();
             this.SuspendLayout();
@@ -71,7 +72,7 @@
             // lblRound
             // 
             this.lblRound.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblRound.Location = new System.Drawing.Point(838, 11);
+            this.lblRound.Location = new System.Drawing.Point(1094, 9);
             this.lblRound.Name = "lblRound";
             this.lblRound.Size = new System.Drawing.Size(228, 31);
             this.lblRound.TabIndex = 3;
@@ -102,44 +103,44 @@
             // 
             // lblUnits
             // 
-            this.lblUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblUnits.Location = new System.Drawing.Point(839, 269);
+            this.lblUnits.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblUnits.Location = new System.Drawing.Point(1094, 61);
             this.lblUnits.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblUnits.Name = "lblUnits";
-            this.lblUnits.Size = new System.Drawing.Size(228, 31);
+            this.lblUnits.Size = new System.Drawing.Size(228, 18);
             this.lblUnits.TabIndex = 7;
             this.lblUnits.Text = "Units";
             this.lblUnits.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // lblBuildings
             // 
-            this.lblBuildings.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBuildings.Location = new System.Drawing.Point(838, 493);
+            this.lblBuildings.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblBuildings.Location = new System.Drawing.Point(1093, 381);
             this.lblBuildings.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblBuildings.Name = "lblBuildings";
-            this.lblBuildings.Size = new System.Drawing.Size(229, 31);
+            this.lblBuildings.Size = new System.Drawing.Size(229, 19);
             this.lblBuildings.TabIndex = 8;
             this.lblBuildings.Text = "Buildings";
             this.lblBuildings.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // tbxUnitsInfo
             // 
-            this.tbxUnitsInfo.Location = new System.Drawing.Point(839, 300);
+            this.tbxUnitsInfo.Location = new System.Drawing.Point(1094, 82);
             this.tbxUnitsInfo.Margin = new System.Windows.Forms.Padding(4);
             this.tbxUnitsInfo.Multiline = true;
             this.tbxUnitsInfo.Name = "tbxUnitsInfo";
             this.tbxUnitsInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbxUnitsInfo.Size = new System.Drawing.Size(228, 179);
+            this.tbxUnitsInfo.Size = new System.Drawing.Size(228, 286);
             this.tbxUnitsInfo.TabIndex = 14;
             // 
             // tbxBuildingsInfo
             // 
-            this.tbxBuildingsInfo.Location = new System.Drawing.Point(839, 524);
+            this.tbxBuildingsInfo.Location = new System.Drawing.Point(1094, 404);
             this.tbxBuildingsInfo.Margin = new System.Windows.Forms.Padding(4);
             this.tbxBuildingsInfo.Multiline = true;
             this.tbxBuildingsInfo.Name = "tbxBuildingsInfo";
             this.tbxBuildingsInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbxBuildingsInfo.Size = new System.Drawing.Size(228, 179);
+            this.tbxBuildingsInfo.Size = new System.Drawing.Size(228, 299);
             this.tbxBuildingsInfo.TabIndex = 15;
             // 
             // numHeight
@@ -191,10 +192,10 @@
             // lblWidth
             // 
             this.lblWidth.AutoSize = true;
-            this.lblWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblWidth.Location = new System.Drawing.Point(900, 61);
             this.lblWidth.Name = "lblWidth";
-            this.lblWidth.Size = new System.Drawing.Size(49, 17);
+            this.lblWidth.Size = new System.Drawing.Size(51, 18);
             this.lblWidth.TabIndex = 18;
             this.lblWidth.Text = "Width";
             this.lblWidth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -202,20 +203,32 @@
             // lblHeight
             // 
             this.lblHeight.AutoSize = true;
-            this.lblHeight.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblHeight.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblHeight.Location = new System.Drawing.Point(1011, 61);
             this.lblHeight.Name = "lblHeight";
-            this.lblHeight.Size = new System.Drawing.Size(55, 17);
+            this.lblHeight.Size = new System.Drawing.Size(56, 18);
             this.lblHeight.TabIndex = 19;
             this.lblHeight.Text = "Height";
             this.lblHeight.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // tbxDetails
+            // 
+            this.tbxDetails.BackColor = System.Drawing.Color.White;
+            this.tbxDetails.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tbxDetails.Location = new System.Drawing.Point(838, 258);
+            this.tbxDetails.Margin = new System.Windows.Forms.Padding(4);
+            this.tbxDetails.Multiline = true;
+            this.tbxDetails.Name = "tbxDetails";
+            this.tbxDetails.Size = new System.Drawing.Size(228, 445);
+            this.tbxDetails.TabIndex = 20;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(1080, 721);
+            this.ClientSize = new System.Drawing.Size(1345, 721);
+            this.Controls.Add(this.tbxDetails);
             this.Controls.Add(this.lblHeight);
             this.Controls.Add(this.lblWidth);
             this.Controls.Add(this.numWidth);
@@ -254,6 +267,7 @@
         private System.Windows.Forms.NumericUpDown numWidth;
         private System.Windows.Forms.Label lblWidth;
         private System.Windows.Forms.Label lblHeight;
+        private System.Windows.Forms.TextBox tbxDetails;
     }
 }
 

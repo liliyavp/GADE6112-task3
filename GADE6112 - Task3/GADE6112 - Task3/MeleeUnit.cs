@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace GADE6112___Task3
 {
-    class MeleeUnit : Unit
-    {
-        public MeleeUnit(int x, int y, string faction) : base(x, y, 200, 2, 20, 1, faction, '*', "Swordsman"){}
+    class MeleeUnit : Unit {
+        public MeleeUnit(int x, int y, string faction) : base(x, y, 200, 2, 20, 1, faction, '#', "Swordsman"){}
 
         public MeleeUnit(string values) : base(values) { }
 

@@ -29,7 +29,7 @@ namespace GADE6112___Task3
             }
             type = (FactoryType) GameEngine.random.Next(0, 2);
             productionSpeed = GameEngine.random.Next(3, 7);
-            spawnCost = GameEngine.random.Next(10, 15);
+            spawnCost = GameEngine.random.Next(15, 25);
         }
 
         public FactoryBuilding(string values) {

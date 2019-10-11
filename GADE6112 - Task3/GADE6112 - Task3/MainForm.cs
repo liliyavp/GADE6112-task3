@@ -58,6 +58,7 @@ namespace GADE6112___Task3
             tbxBuildingsInfo.Text = engine.GetBuildingsInfo();
             lblUnits.Text = "Units (" + engine.NumUnitsAlive + "/" + engine.NumUnits + ")";
             lblBuildings.Text = "Buildings (" + engine.NumBuildingsAlive + "/" + engine.NumBuildings + ")";
+            tbxDetails.Text = engine.GetDetails();
         }
 
         private void BtnStartPauseSim_Click(object sender, EventArgs e)

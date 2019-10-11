@@ -14,6 +14,9 @@ namespace GADE6112___Task3 {
         protected bool isDestroyed;
         protected string faction;
 
+        int hideChecksBeforeInvisible = 5;
+        bool isVisible = true;
+
         public string Faction {
             get { return faction; }
         }
@@ -30,6 +33,9 @@ namespace GADE6112___Task3 {
 
         public bool IsDestroyed {
             get { return isDestroyed; }
+        }
+        public bool IsVisible {
+            get { return isVisible; }
         }
 
         public int Health {
@@ -50,6 +56,14 @@ namespace GADE6112___Task3 {
 
         public virtual void Destroy() {
             isDestroyed = true;
+        }
+
+        public void CheckHide() {
+            if (hideChecksBeforeInvisible == 0)
+                return;
+
+            hideChecksBeforeInvisible--;
+            isVisible = hideChecksBeforeInvisible > 0;
         }
 
     }

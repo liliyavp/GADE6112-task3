@@ -74,6 +74,7 @@ namespace GADE6112___Task3
         }
 
         public override void Destroy() {
+            Health = 0;
             isDestroyed = true;
             isAttacking = false;
             symbol = 'X';
