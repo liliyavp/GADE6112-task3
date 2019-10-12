@@ -87,6 +87,11 @@ namespace GADE6112___Task3
                         continue;
                     }
 
+                    //unit has to wait a number of rounds equal to speed before it can take action
+                    if(round % unit.Speed != 0) {
+                        continue;
+                    }
+
                     Target closestTarget = manager.GetClosestTarget(unit, ignoreFactions);
 
                     if (faction == WIZARDS) {
@@ -106,12 +111,12 @@ namespace GADE6112___Task3
                     double healthPercentage = unit.Health / (double)unit.MaxHealth;
                     bool isWizard = unit is WizardUnit;
 
-                    //if not a wizard and the target is a unit, run away if health is below 25% (can still attack buildings)
-                    if (healthPercentage <= 0.25 && closestTarget is Unit && !isWizard) {
+                    //if not a wizard, run away if health is below 25%
+                    if (healthPercentage <= 0.25 && !isWizard) {
                         unit.RunAway();
                     
                     }
-                    //if a wizard health is below 50%, run away (can't attack buildings)
+                    //if a wizard and health is below 50%, run away
                     else if (healthPercentage <= 0.5 && isWizard) {
                         unit.RunAway();
                     
@@ -147,6 +152,7 @@ namespace GADE6112___Task3
             foreach (string faction in factions) {
                 //new resources are only considered at the beginning of the next round
                 int resources = GetResourcesTotalByFaction(faction);
+                int usedResources = 0;
 
                 foreach (Building building in manager.GetBuildingsByFaction(faction)) {
                     //ignore destroyed buildings
@@ -160,6 +166,8 @@ namespace GADE6112___Task3
 
                         if (factoryBuilding.CanProduce(round) && factoryBuilding.SpawnCost <= resources) {
                             resources -= factoryBuilding.SpawnCost;
+                            usedResources += factoryBuilding.SpawnCost;
+
                             Unit newUnit = factoryBuilding.SpawnUnit(round);
                             manager.AddUnit(newUnit);
                         }
@@ -168,9 +176,13 @@ namespace GADE6112___Task3
                         resourceBuilding.GenerateResources();
                     }
                 }
+
+                //remove used resources from faction's available resource buildings
+                UseResourcesFromFaction(faction, usedResources);
             }
         }
 
+        //calculate how much resources a faction has at it's disposal
         int GetResourcesTotalByFaction(string faction) {
             int totalResources = 0;
 
@@ -182,6 +194,32 @@ namespace GADE6112___Task3
                 }
             }
             return totalResources;
+        }
+
+        void UseResourcesFromFaction(string faction, int usedResources) {
+            foreach (Building building in manager.GetBuildingsByFaction(faction)) {
+                if (building is ResourceBuilding && !building.IsDestroyed) {
+                    ResourceBuilding resourceBuilding = (ResourceBuilding)building;
+
+                    //this buildings has not resources left, let's skip it
+                    if(resourceBuilding.Generated <= 0) {
+                        continue;
+                    }
+
+                    //determine how many resources can be used from this buildings
+                    int resourcesToUse = Math.Min(usedResources, resourceBuilding.Generated);
+
+                    //subtract resources from total used by faction
+                    usedResources -= resourcesToUse;
+                    //subtract resources from actual building
+                    resourceBuilding.Generated -= resourcesToUse;
+
+                    //if we've subtracted all the resources use by this faction
+                    if(usedResources <= 0) {
+                        return;
+                    }
+                }
+            }
         }
 
         void AddToResourcePoolByFaction(string faction) {

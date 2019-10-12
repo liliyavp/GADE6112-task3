@@ -45,6 +45,7 @@ namespace GADE6112___Task3
 
         public int Generated {
             get { return generated; }
+            set { generated = value; }
         }
 
         public int Pool {

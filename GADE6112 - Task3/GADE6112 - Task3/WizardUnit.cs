@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GADE6112___Task3 {
     class WizardUnit : Unit{
-        public WizardUnit(int x, int y, string faction) : base(x, y, 100, 1, 15, 5, faction, '*', "Sorceress") { }
+        public WizardUnit(int x, int y, string faction) : base(x, y, 100, 3, 10, 5, faction, '*', "Sorceress") { }
 
         public WizardUnit(string values) : base(values) { }
 

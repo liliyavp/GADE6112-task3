@@ -59,6 +59,10 @@ namespace GADE6112___Task3
             get { return name; }
         }
 
+        public int Speed {
+            get { return speed; }
+        }
+
         //returns true if target was destroyed
         public virtual bool Attack(Target target) {
             isAttacking = true;
