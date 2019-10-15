@@ -13,6 +13,7 @@ namespace GADE6112___Task3 {
         protected int maxHealth;
         protected bool isDestroyed;
         protected string faction;
+        //instead of being in unit and building, these are shared. in single class.
 
         int hideChecksBeforeInvisible = 5;
         bool isVisible = true;
@@ -47,7 +48,7 @@ namespace GADE6112___Task3 {
             get { return maxHealth; }
         }
 
-        public double GetDistance(Target to) {
+        public double GetDistance(Target to) {//NOTE also moved here
             double xDistance = to.X - X;
             double yDistance = to.Y - Y;
 
@@ -61,7 +62,7 @@ namespace GADE6112___Task3 {
         public void CheckHide() {
             if (hideChecksBeforeInvisible == 0)
                 return;
-
+            //checks if target that's been dead for a  while should be hidden
             hideChecksBeforeInvisible--;
             isVisible = hideChecksBeforeInvisible > 0;
         }
