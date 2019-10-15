@@ -485,6 +485,8 @@ namespace GADE6112___Task3
         }
 
         private void StayInBounds(Unit unit, int width, int height)
+            //had to know width and height
+            //they're public in map
         {
             if (unit.X < 0)
             {
