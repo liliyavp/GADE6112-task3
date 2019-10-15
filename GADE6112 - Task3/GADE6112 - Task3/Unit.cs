@@ -14,10 +14,12 @@ namespace GADE6112___Task3
         protected char symbol;
         protected bool isAttacking = false;
         protected string name;
+        //no longer has properties in target
 
         public static Random random = new Random();
 
         public Unit(int x, int y, int health, int speed, int attack, int attackRange, string faction, char symbol, string name) {
+            //inherits from target
  
             this.health = health;
             maxHealth = health;
