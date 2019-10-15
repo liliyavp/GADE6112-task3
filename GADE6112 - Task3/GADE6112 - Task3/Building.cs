@@ -8,7 +8,7 @@ namespace GADE6112___Task3
 {
     abstract class Building : Target {
         protected char symbol;
-
+        //no longer has properties in target bc inherits from target
         public Building(int x, int y, int health, string faction, char symbol)
         {
             this.x = x;
