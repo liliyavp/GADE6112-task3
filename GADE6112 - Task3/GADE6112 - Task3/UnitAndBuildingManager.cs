@@ -12,7 +12,7 @@ namespace GADE6112___Task3 {
 
         //dictionary that stores a list of buildings using their faction as a key
         Dictionary<string, List<Building>> buildings;
-
+        //string is key, list<....> is value
         List<string> factions = new List<string>();
 
         public UnitAndBuildingManager() {
@@ -131,17 +131,21 @@ namespace GADE6112___Task3 {
                 //targets in the ignore list are skipped
                 if (Array.IndexOf(ignoreFactions, faction) >= 0) {
                     continue;
+                    //ignore the faction if it's in position 0 or above. so it's to be ignored.
                 }
                 //include units in list if includeUnits is set to true
                 if (includeUnits) {
                     targets.AddRange(units[faction]);
+                    //add the entire list of units from this faction to the target list
+                    //add whole list to another list with AddRange
                 }
                 //include buildings in list if includeUnits is set to true
                 if (includeBuildings) {
                     targets.AddRange(buildings[faction]);
                 }
-            }
+            }//won't return any units or buildings from own faction
             return targets;
+            //return all the possible targets. don't have to loop through own faction. just the ones that are actually targets
         }
 
         public List<Unit> GetUnitsByFaction(string faction) {
